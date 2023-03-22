@@ -44,7 +44,8 @@ fail_ind = []
 
 root = Tk()
 root.geometry('840x440+200+200')
-root.title('测试')
+root.title('反复断开重连中继测试')
+root.resizable(False,False)
 
 
 def Check_Input(input, entry):
@@ -647,9 +648,23 @@ def repeater():
                 Start.configure(state=NORMAL)
                 break
     except Exception as e:
+        end.set(value=time.strftime('%m%d %H:%M:%S'))
         showinfo("中继测试失败：{}".format(e))
         logging.info("中继测试失败：{}".format(e))
         status_label.configure(text="程序运行失败", bg="red")
+        WEB_Input.configure(state=NORMAL)
+        UUTPWD_Input.configure(state=NORMAL)
+        WIFIName_Input.configure(state=NORMAL)
+        WIFIPWD_Input.configure(state=NORMAL)
+        COUNTT_Input.configure(state=NORMAL)
+        INTERVALT_Input.configure(state=NORMAL)
+        Start.configure(state=NORMAL)
+    finally:
+        end.set(value=time.strftime('%m%d %H:%M:%S'))
+        if i + 1 < COUNT:
+            status_label.configure(text="程序运行失败", bg="red")
+        else:
+            status_label.configure(text="程序运行完毕", bg="green")
         WEB_Input.configure(state=NORMAL)
         UUTPWD_Input.configure(state=NORMAL)
         WIFIName_Input.configure(state=NORMAL)
