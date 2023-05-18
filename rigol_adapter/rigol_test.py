@@ -183,23 +183,26 @@ if __name__ == '__main__':
                 sent_current_B = entry_3.get()
                 call.set_current(f"{sent_current_A}")
                 call.read_v()
-                time.sleep(5)
+                myprint(f"start sleep {int(entry_4.get())} time")
+                time.sleep(int(entry_4.get()))
                 call.set_current(f"{sent_current_B}")
                 call.read_v()
-                time.sleep(0.5)
+                myprint(f"start sleep {int(entry_5.get())} time")
+                time.sleep(int(entry_5.get()))
                 t += 1
             else:
                 call.set_current(f"{sent_current_A}")
                 call.read_v()
-                time.sleep(5)
+                myprint(f"start sleep {int(entry_4.get())} time")
+                time.sleep(int(entry_4.get()))
                 call.set_current(f"{sent_current_B}")
                 call.read_v()
-                time.sleep(5)
-
-            # 绘制图形
+                myprint(f"start sleep {int(entry_5.get())} time")
+                time.sleep(int(entry_5.get()))
         except Exception as e:
+            call.ON_OFF_button()
             call.close()
-            myprint(e)
+            colormyprint(f"error ----> : {e}",'red')
     def plot():
         # the figure that will contain the plot
         fig = Figure(figsize=(5, 5),
@@ -208,11 +211,28 @@ if __name__ == '__main__':
             number[i] = float(v)
         plot1 = fig.add_subplot(111)
         plot1.plot(number)
-        myprint(f"volaet limit : {int(float(number[0])) * 0.97}")
-        myprint(f"volaet limit : {int(float(number[0])) * 1.03}")
-        myprint(int(float(number[0])))
-        plot1.axhline(y=int(number[0])*0.97, ls=":", c="green", lw=3)  # 添加水平直线
-        plot1.axhline(y=int(number[0]) * 1.03, ls=":", c="green", lw=3)
+        if checkbut_limit_3.get()==1:
+            myprint("设置电压limit正负3%")
+            myprint(f"volaet limit : {round(int(number[0]), 0) * 0.97}")
+            myprint(f"volaet limit : {round(int(number[0]), 0) * 1.03}")
+            myprint(round(int(number[0]), 0))
+            plot1.axhline(y=int(number[0])*0.97, ls=":", c="green", lw=3)  # 添加水平直线
+            plot1.axhline(y=int(number[0]) * 1.03, ls=":", c="green", lw=3)
+        elif checkbut_limit_5.get()==1:
+            myprint("设置电压limit正负5%")
+            myprint(f"volaet limit : {round(int(number[0]), 0) * 0.95}")
+            myprint(f"volaet limit : {round(int(number[0]), 0) * 1.05}")
+            myprint(round(int(number[0]), 0))
+            plot1.axhline(y=int(number[0]) * 0.95, ls=":", c="green", lw=3)  # 添加水平直线
+            plot1.axhline(y=int(number[0]) * 1.05, ls=":", c="green", lw=3)
+        else:
+            myprint("未设置电压limit，默认正负3%")
+            myprint(f"volaet limit : {round(int(number[0]), 0) * 0.97}")
+            myprint(f"volaet limit : {round(int(number[0]), 0) * 1.03}")
+            myprint(round(int(number[0]), 0))
+            round(int(number[0]), 0)
+            plot1.axhline(y=int(number[0]) * 0.97, ls=":", c="green", lw=3)  # 添加水平直线
+            plot1.axhline(y=int(number[0]) * 1.03, ls=":", c="green", lw=3)
         canvas = FigureCanvasTkAgg(fig,
                                    master=window)
         canvas.draw()
@@ -256,19 +276,43 @@ if __name__ == '__main__':
     button3['command'] = lambda: MyThread1(chart())
     frame1 = tk.Frame(root)
     frame1.pack()
+
+    label_4 = Label(frame1, width=15, text="电流A持续时间:", font=("黑体", 11))
+    label_4.pack(side=LEFT, padx=0, pady=10)
+    entry_4 = Entry(frame1, width=10, font=("Consolas", 11))
+    entry_4.pack(side=LEFT, after=label_4, padx=0, pady=10, fill=X)
+    label_5 = Label(frame1, width=15, text="电流B持续时间:", font=("黑体", 11))
+    label_5.pack(side=LEFT, after=entry_4, padx=10, pady=10)
+    entry_5 = Entry(frame1, width=10, font=("Consolas", 11))
+    entry_5.pack(side=LEFT, after=label_5, padx=0, pady=10, fill=X)
+
+    checkbut_limit_3=BooleanVar()
+    checkbtn_1=Checkbutton(frame1, width=10,text="3%",variable=checkbut_limit_3, font=("Consolas",11))
+    checkbtn_1.pack(side=LEFT,after=entry_5)
+
+    checkbut_limit_5=BooleanVar()
+    checkbtn_2=Checkbutton(frame1, width=10,text="5%",variable=checkbut_limit_5, font=("Consolas",11))
+    checkbtn_2.pack(side=LEFT, after=checkbtn_1)
+
+
     # 显示help信息
     frame2 = tk.LabelFrame(root, text='Help', height=7, font=("consolas", 11))
     frame2.pack(fill=tk.BOTH, expand=0)
     textMess_2 = ScrolledText(frame2, bg='white', height=7, font=("consolas", 11))
     textMess_2.pack(fill=tk.BOTH, expand=1)
-    textMess_2.insert(tk.END, "IDN : The IDN you want to scan : USB0::0x1AB1::0x0E11::DL3A245001322::INSTR\n")
+    textMess_2.insert(tk.END, "IDN :      The IDN you want to scan : USB0::0x1AB1::0x0E11::DL3A245001322::INSTR\n")
     textMess_2.insert(tk.END, "CURRENTA : Current A is the current set for the first time,\n "
-                              "           which is generally 75% of the limit current of the adapter\n")
+                              "          which is generally 75% of the limit current of the adapter\n")
     textMess_2.insert(tk.END, "CURRENTB : Current B is the current set for the second time,\n "
-                              "           which is generally 100% of the limit current of the adapter or overloaded\n")
-    textMess_2.insert(tk.END, "start: Start running the program\n")
-    textMess_2.insert(tk.END, "stop:  Stop running the program\n")
-    textMess_2.insert(tk.END, "chart: Shows a line chart made from voltage\n")
+                              "          which is generally 100% of the limit current of the adapter or overloaded\n")
+    textMess_2.insert(tk.END, "start:     Start running the program\n")
+    textMess_2.insert(tk.END, "stop:      Stop running the program\n")
+    textMess_2.insert(tk.END, "chart:     Shows a line chart made from voltage\n")
+    textMess_2.insert(tk.END, "3%:        The upper limit of voltage is set to 3%\n")
+    textMess_2.insert(tk.END, "5%:        The upper limit of voltage is set to 5%\n")
+    textMess_2.insert(tk.END, "Current A duration: Set current A holding time\n")
+    textMess_2.insert(tk.END, "Current B duration: Set current B holding time\n")
+
 
     # 为信息框设置一个容器
     frame3 = tk.LabelFrame(root, text='信息框', height=10, font=("黑体", 11))
@@ -276,11 +320,7 @@ if __name__ == '__main__':
     # 放置一个文本框作为信息输出窗口
     textMess = ScrolledText(frame3, bg='white', height=10, font=("consolas", 11))
     textMess.pack(fill=tk.BOTH, expand=YES)
-    # frame4 = tk.LabelFrame(root, text='状态框', height=10, font=("黑体", 11))
-    # frame4.pack(fill=tk.BOTH, expand=1)
-    # # 放置一个文本框作为信息输出窗口
-    # label_4 = Label(frame4, width=13, text="运行时间：", font=("黑体", 11))
-    # label_4.pack(side=LEFT, padx=0, pady=10)
+
     # # 输出信息
     def myprint(txt):
         global textMess
